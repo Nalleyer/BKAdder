@@ -5,8 +5,8 @@
 
 ***********parameter*********************
 .param TD=10ns
-.param TR=0.1ns
-.param TF=0.1ns
+.param TR=1ns
+.param TF=1ns
 .param PW=50ns
 .param PER=100ns
 .param TEND=200ns

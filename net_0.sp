@@ -1,0 +1,282 @@
+*BK		Adder
+.param		prn=3
+.param		n=5
+.param		L=0.35u
+
+
+*  normal  in  n  out
+*  !G  <<  A  *  B
+.subckt  G  VDD  GND  A  B  NG
+	+L=0.35u
+	MP1		NG		A		VDD		VDD		pmos_3p3	L=L		W='n*L*prn'
+	MP2		NG		B		VDD		VDD		pmos_3p3	L=L		W='n*L*prn'
+	MN1		NG		A		1		GND		nmos_3p3	L=L		W='n*L*2'
+	MN2		1		B		GND		GND		nmos_3p3	L=L		W='n*L*2'
+.ends
+
+*  normal  in  n  out
+*  !P  <<  A  +  B
+.subckt  P  VDD  GND  A  B  NP 	
+	+L=0.35u
+	MP1		1		A		VDD		VDD		pmos_3p3	L=L		W='n*L*prn*2'
+	MP2		NP		B		1		VDD		pmos_3p3	L=L		W='n*L*prn*2'
+	MN1		NP		A		GND		GND		nmos_3p3	L=L		W='n*L'
+	MN2		NP		B		GND		GND		nmos_3p3	L=L		W='n*L'
+.ends
+
+*  n  in  n  out
+*  !OUTG  <<  !GA  *  (  !PA  +  !GB  )
+*  !OUTP  <<  !PA  *  !PB
+.subckt  POINT  VDD  GND  NPA  NPB  NGA  NGB  NOUTG  NOUTP
+	+L=0.35u
+	MP1		OUTG	NGA		VDD		VDD		pmos_3p3	L=L		W='n*L*prn'
+	MP2		1		NPA		VDD		VDD		pmos_3p3	L=L		W='n*L*prn*2'
+	MP3		OUTG	NGB		1		VDD		pmos_3p3	L=L		W='n*L*prn*2'
+	MN1		OUTG	NGA		2		GND		nmos_3p3	L=L		W='n*L*2'
+	MN2		2		NPA		GND		GND		nmos_3p3	L=L		W='n*L*2'
+	MN3		2		NGB		GND		GND		nmos_3p3	L=L		W='n*L*2'
+	MP4		3		NPA		VDD		VDD		pmos_3p3	L=L		W='n*L*prn*2'
+	MP5		OUTP	NPB		3		VDD		pmos_3p3	L=L		W='n*L*prn*2'
+	MN4		OUTP	NPA		GND		GND		nmos_3p3	L=L		W='n*L'
+	MN5		OUTP	NPB		GND		GND		nmos_3p3	L=L		W='n*L'
+*		reverse
+	MP6		NOUTG		OUTG		VDD		VDD		pmos_3p3		L=L		W='n*L*prn'
+	MN6		NOUTG		OUTG		GND		GND		nmos_3p3		L=L		W='n*L'
+	
+	MP7		NOUTP		OUTP		VDD		VDD		pmos_3p3		L=L		W='n*L*prn'
+	MN7		NOUTP		OUTP		GND		GND		nmos_3p3		L=L		W='n*L'
+.ends
+	
+
+*  n  in  
+*  point  without  P  signal
+*  Co,i  =  Gi:0  +  Pi:0  *  Ci,0  (and  !Co,i)
+.subckt  POINT_G  VDD  GND  NP  NG  NCI0  NOUTG  OUTG
+	+L=0.35u
+	MP1		OUTG		NG		VDD		VDD		pmos_3p3		L=L		W='n*L*prn'
+	MP2		1			NP		VDD		VDD		pmos_3p3		L=L		W='n*L*prn*2'
+	MP3		OUTG		NCI0	1		VDD		pmos_3p3		L=L		W='n*L*prn*2'
+	MN1		OUTG		NG		2		GND		nmos_3p3		L=L		W='n*L*2'
+	MN2		2			NP		GND		GND		nmos_3p3		L=L		W='n*L*2'
+	MN3		2			NCI0	GND		GND		nmos_3p3		L=L		W='n*L*2'
+*		reverse
+	MP4		NOUTG		OUTG		VDD		VDD		pmos_3p3		L=L		W='n*L*prn'
+	MN4		NOUTG		OUTG		GND		GND		nmos_3p3		L=L		W='n*L'
+	
+.ends
+
+*  n  in  normal  out
+*  point  without  P  signal
+*  Co,i  =  Gi:0  +  Pi:0  *  Ci,0
+*  will  be  used  to  generate  CO15.(NCO15  is  useless)
+.subckt  POINT_G1  VDD  GND  NP  NG  NCI0  OUTG
+	+L=0.35u
+	MP1		OUTG		NG		VDD		VDD		pmos_3p3		L=L		W='n*L*prn'
+	MP2		1			NP		VDD		VDD		pmos_3p3		L=L		W='n*L*prn*2'
+	MP3		OUTG		NCI0	1		VDD		pmos_3p3		L=L		W='n*L*prn*2'
+	MN1		OUTG		NG		2		GND		nmos_3p3		L=L		W='n*L*2'
+	MN2		2			NP		GND		GND		nmos_3p3		L=L		W='n*L*2'
+	MN3		2			NCI0	GND		GND		nmos_3p3		L=L		W='n*L*2'
+.ends
+
+
+*  n  in  normal  out
+*  sum  (xor)
+*  Si  =  Pi  ^  Co,i-1  (when  i  =  1,  P0  ^  Ci,0)
+.subckt  SUM  VDD  GND  NAXORB  AXORB  NC  C  S
+ +L=0.35u
+
+	MP2		1		AXORB	VDD		VDD		pmos_3p3		L=L		W='n*L*prn*2'
+	MP3		1		C		VDD		VDD		pmos_3p3		L=L		W='n*L*prn*2'
+	MP4		S		NAXORB	1		VDD		pmos_3p3		L=L		W='n*L*prn*2'
+	MP5		S		NC		1		VDD		pmos_3p3		L=L		W='n*L*prn*2'
+	MN2		S		AXORB	2		GND		nmos_3p3		L=L		W='n*L*2'
+	MN3		2		C		GND		GND		nmos_3p3		L=L		W='n*L*2'
+	MN4		S		NAXORB	3		GND		nmos_3p3		L=L		W='n*L*2'
+	MN5		3		NC		GND		GND		nmos_3p3		L=L		W='n*L*2'
+
+.ends
+
+*  n  in  n  out
+*  xor  and  nxor
+.subckt  XORNXOR  VDD  GND  A  B  NAXORB  AXORB
+* reverse
+	MP1		NA		A		VDD		VDD		pmos_3p3		L=L		W='n*L*prn'
+	MN1		NA		A		GND		GND		nmos_3p3		L=L		W='n*L'
+
+	MP2		NB		B		VDD		VDD		pmos_3p3		L=L		W='n*L*prn'
+	MN2		NB		B		GND		GND		nmos_3p3		L=L		W='n*L'
+
+* nxor
+	MP3		1		A		VDD		VDD		pmos_3p3		L=L		W='n*L*prn*2'
+	MP4		1		NB		VDD		VDD		pmos_3p3		L=L		W='n*L*prn*2'
+	MP5		NAXORB	NA		1		VDD		pmos_3p3		L=L		W='n*L*prn*2'
+	MP6		NAXORB	B		1		VDD		pmos_3p3		L=L		W='n*L*prn*2'
+
+	MN3		NAXORB	A		2		GND		nmos_3p3		L=L		W='n*L*2'
+	MN4		NAXORB	NA		3		GND		nmos_3p3		L=L		W='n*L*2'
+	MN5		2		NB		GND		GND		nmos_3p3		L=L		W='n*L*2'
+	MN6		3		B		GND		GND		nmos_3p3		L=L		W='n*L*2'
+
+*		xor
+	MP7		4		A		VDD		VDD		pmos_3p3		L=L		W='n*L*prn*2'
+	MP8		4		B		VDD		VDD		pmos_3p3		L=L		W='n*L*prn*2'
+	MP9		AXORB	NA		4		VDD		pmos_3p3		L=L		W='n*L*prn*2'
+	MP10	AXORB	NB		4		VDD		pmos_3p3		L=L		W='n*L*prn*2'
+
+	MN7		AXORB		A		5		GND		nmos_3p3		L=L		W='n*L*2'
+	MN8		AXORB		NA		6		GND		nmos_3p3		L=L		W='n*L*2'
+	MN9		5			B		GND		GND		nmos_3p3		L=L		W='n*L*2'
+	MN10	6			NB		GND		GND		nmos_3p3		L=L		W='n*L*2'
+
+.ends
+
+* buffer
+.subckt BUFFER VDD GND IN OUT
+	+L=3.5u
+	MP1 1 IN VDD VDD 	pmos_3p3		L='L'		W='2*n*L'
+	MN1 1 IN GND GND	nmos_3p3		L='L'		W='2*n*L'
+	MP2 OUT 1 VDD VDD	pmos_3p3		L='L'		W='2*n*L'
+	MN2 OUT 1 GND GND	nmos_3p3		L='L'		W='2*n*L'
+.ends
+	
+***************************************************************
+*  top
+*  generate  NCI0
+.subckt  BKADDER  A15  A14  A13  A12  A11  A10  A9  A8  A7  A6  A5  A4  A3  A2  A1  A0
+ +B15  B14  B13  B12  B11  B10  B9  B8  B7  B6  B5  B4  B3  B2  B1  B0
+ +S15  S14  S13  S12  S11  S10  S9  S8  S7  S6  S5  S4  S3  S2  S1  S0
+ +CI0  CO15
+	MP1		NCI0		CI0		VDD		VDD		pmos_3p3		L=L		W='n*L*prn'
+	MN1		NCI0		CI0		GND		GND		nmos_3p3		L=L		W='n*L'
+
+*  NG0  ~  NG15
+	XG0		VDD		GND		A0		B0		NG0		G
+	XG1		VDD		GND		A1		B1		NG1		G
+	XG2		VDD		GND		A2		B2		NG2		G
+	XG3		VDD		GND		A3		B3		NG3		G
+	XG4		VDD		GND		A4		B4		NG4		G
+	XG5		VDD		GND		A5		B5		NG5		G
+	XG6		VDD		GND		A6		B6		NG6		G
+	XG7		VDD		GND		A7		B7		NG7		G
+	XG8		VDD		GND		A8		B8		NG8		G
+	XG9		VDD		GND		A9		B9		NG9		G
+	XG10		VDD		GND		A10		B10		NG10		G
+	XG11		VDD		GND		A11		B11		NG11		G
+	XG12		VDD		GND		A12		B12		NG12		G
+	XG13		VDD		GND		A13		B13		NG13		G
+	XG14		VDD		GND		A14		B14		NG14		G
+	XG15		VDD		GND		A15		B15		NG15		G
+*  NP0  ~  NP15
+	XP0		VDD		GND		A0		B0		NP0		P
+	XP1		VDD		GND		A1		B1		NP1		P
+	XP2		VDD		GND		A2		B2		NP2		P
+	XP3		VDD		GND		A3		B3		NP3		P
+	XP4		VDD		GND		A4		B4		NP4		P
+	XP5		VDD		GND		A5		B5		NP5		P
+	XP6		VDD		GND		A6		B6		NP6		P
+	XP7		VDD		GND		A7		B7		NP7		P
+	XP8		VDD		GND		A8		B8		NP8		P
+	XP9		VDD		GND		A9		B9		NP9		P
+	XP10		VDD		GND		A10		B10		NP10		P
+	XP11		VDD		GND		A11		B11		NP11		P
+	XP12		VDD		GND		A12		B12		NP12		P
+	XP13		VDD		GND		A13		B13		NP13		P
+	XP14		VDD		GND		A14		B14		NP14		P
+	XP15		VDD		GND		A15		B15		NP15		P
+* NAXORB
+	XXOR0		VDD		GND		A0		B0		NAXORB0		AXORB0		XORNXOR
+	XXOR1		VDD		GND		A1		B1		NAXORB1		AXORB1		XORNXOR
+	XXOR2		VDD		GND		A2		B2		NAXORB2		AXORB2		XORNXOR
+	XXOR3		VDD		GND		A3		B3		NAXORB3		AXORB3		XORNXOR
+	XXOR4		VDD		GND		A4		B4		NAXORB4		AXORB4		XORNXOR
+	XXOR5		VDD		GND		A5		B5		NAXORB5		AXORB5		XORNXOR
+	XXOR6		VDD		GND		A6		B6		NAXORB6		AXORB6		XORNXOR
+	XXOR7		VDD		GND		A7		B7		NAXORB7		AXORB7		XORNXOR
+	XXOR8		VDD		GND		A8		B8		NAXORB8		AXORB8		XORNXOR
+	XXOR9		VDD		GND		A9		B9		NAXORB9		AXORB9		XORNXOR
+	XXOR10		VDD		GND		A10		B10		NAXORB10	AXORB10		XORNXOR
+	XXOR11		VDD		GND		A11		B11		NAXORB11	AXORB11		XORNXOR
+	XXOR12		VDD		GND		A12		B12		NAXORB12	AXORB12		XORNXOR
+	XXOR13		VDD		GND		A13		B13		NAXORB13	AXORB13		XORNXOR
+	XXOR14		VDD		GND		A14		B14		NAXORB14	AXORB14		XORNXOR
+	XXOR15		VDD		GND		A15		B15		NAXORB15	AXORB15		XORNXOR
+
+*  normal  tree
+*  0,1  2,3  ...
+	XPG1_0		VDD		GND		NP1		NP0		NG1		NG0		NG1_0		NP1_0		POINT
+	XPG3_2		VDD		GND		NP3		NP2		NG3		NG2		NG3_2		NP3_2		POINT
+	XPG5_4		VDD		GND		NP5		NP4		NG5		NG4		NG5_4		NP5_4		POINT
+	XPG7_6		VDD		GND		NP7		NP6		NG7		NG6		NG7_6		NP7_6		POINT
+	XPG9_8		VDD		GND		NP9		NP8		NG9		NG8		NG9_8		NP9_8		POINT
+	XPG11_10	VDD		GND		NP11	NP10	NG11	NG10	NG11_10		NP11_10		POINT
+	XPG13_12	VDD		GND		NP13	NP12	NG13	NG12	NG13_12		NP13_12		POINT
+	XPG15_14	VDD		GND		NP15	NP14	NG15	NG14	NG15_14		NP15_14		POINT
+
+	XPG3_0		VDD		GND		NP3_2	NP1_0		NG3_2		NG1_0		NG3_0		NP3_0		POINT
+	XPG7_4		VDD		GND		NP7_6	NP5_4		NG7_6		NG5_4		NG7_4		NP7_4		POINT
+	XPG11_8		VDD		GND		NP11_10	NP9_8		NG11_10		NG9_8		NG11_8		NP11_8		POINT
+	XPG15_12	VDD		GND		NP15_14	NP13_12		NG15_14		NG13_12		NG15_12		NP15_12		POINT
+
+	XPG7_0		VDD		GND		NP7_4		NP3_0		NG7_4		NG3_0		NG7_0		NP7_0		POINT
+	XPG15_8		VDD		GND		NP15_12		NP11_8		NG15_12		NG11_8		NG15_8		NP15_8		POINT
+
+	XPG15_0		VDD		GND		NP15_8		NP7_0		NG15_8		NG7_0		NG15_0		NP15_0		POINT
+
+* buffer
+*	XBUFFERP	VDD		GND 	NP7_0	B_NP7_0		BUFFER
+*	XBUFFERG	VDD		GND 	NG7_0	B_NG7_0		BUFFER
+
+* reverse	tree
+	XPG11_0		VDD		GND		NP11_8		NP7_0		NG11_8		NG7_0		NG11_0		NP11_0		POINT
+
+	XPG5_0		VDD		GND		NP5_4		NP3_0		NG5_4		NG3_0		NG5_0		NP5_0		POINT
+	XPG9_0		VDD		GND		NP9_8		NP7_0		NG9_8		NG7_0		NG9_0		NP9_0		POINT
+	XPG13_0		VDD		GND		NP13_12		NP11_0		NG13_12		NG11_0		NG13_0		NP13_0		POINT
+	
+	XPG2_0		VDD		GND		NP2		NP1_0		NG2		NG1_0		NG2_0		NP2_0		POINT
+	XPG4_0		VDD		GND		NP4		NP3_0		NG4		NG3_0		NG4_0		NP4_0		POINT
+	XPG6_0		VDD		GND		NP6		NP5_0		NG6		NG5_0		NG6_0		NP6_0		POINT
+	XPG8_0		VDD		GND		NP8		NP7_0		NG8		NG7_0		NG8_0		NP8_0		POINT
+	XPG10_0		VDD		GND		NP10		NP9_0		NG10		NG9_0		NG10_0		NP10_0		POINT
+	XPG12_0		VDD		GND		NP12		NP11_0		NG12		NG11_0		NG12_0		NP12_0		POINT
+	XPG14_0		VDD		GND		NP14		NP13_0		NG14		NG13_0		NG14_0		NP14_0		POINT
+
+*	Co	generate	
+	XCO0		VDD		GND		NP0		NG0		NCI0		NCO0		CO0		POINT_G
+	XCO1		VDD		GND		NP1_0		NG1_0		NCI0		NCO1		CO1		POINT_G
+	XCO2		VDD		GND		NP2_0		NG2_0		NCI0		NCO2		CO2		POINT_G
+	XCO3		VDD		GND		NP3_0		NG3_0		NCI0		NCO3		CO3		POINT_G
+	XCO4		VDD		GND		NP4_0		NG4_0		NCI0		NCO4		CO4		POINT_G
+	XCO5		VDD		GND		NP5_0		NG5_0		NCI0		NCO5		CO5		POINT_G
+	XCO6		VDD		GND		NP6_0		NG6_0		NCI0		NCO6		CO6		POINT_G
+	XCO7		VDD		GND		NP7_0		NG7_0		NCI0		NCO7		CO7		POINT_G
+	XCO8		VDD		GND		NP8_0		NG8_0		NCI0		NCO8		CO8		POINT_G
+	XCO9		VDD		GND		NP9_0		NG9_0		NCI0		NCO9		CO9		POINT_G
+	XCO10		VDD		GND		NP10_0		NG10_0		NCI0		NCO10		CO10		POINT_G
+	XCO11		VDD		GND		NP11_0		NG11_0		NCI0		NCO11		CO11		POINT_G
+	XCO12		VDD		GND		NP12_0		NG12_0		NCI0		NCO12		CO12		POINT_G
+	XCO13		VDD		GND		NP13_0		NG13_0		NCI0		NCO13		CO13		POINT_G
+	XCO14		VDD		GND		NP14_0		NG14_0		NCI0		NCO14		CO14		POINT_G
+*
+	XCO15		VDD		GND		NP15_0		NG15_0		NCI0		CO15		POINT_G1
+
+*	Sum
+	XSUM0		VDD		GND		NAXORB0		AXORB0		NCI0		CI0		S0		SUM
+	XSUM1		VDD		GND		NAXORB1		AXORB1		NCO0		CO0		S1		SUM
+	XSUM2		VDD		GND		NAXORB2		AXORB2		NCO1		CO1		S2		SUM
+	XSUM3		VDD		GND		NAXORB3		AXORB3		NCO2		CO2		S3		SUM
+	XSUM4		VDD		GND		NAXORB4		AXORB4		NCO3		CO3		S4		SUM
+	XSUM5		VDD		GND		NAXORB5		AXORB5		NCO4		CO4		S5		SUM
+	XSUM6		VDD		GND		NAXORB6		AXORB6		NCO5		CO5		S6		SUM
+	XSUM7		VDD		GND		NAXORB7		AXORB7		NCO6		CO6		S7		SUM
+	XSUM8		VDD		GND		NAXORB8		AXORB8		NCO7		CO7		S8		SUM
+	XSUM9		VDD		GND		NAXORB9		AXORB9		NCO8		CO8		S9		SUM
+	XSUM10		VDD		GND		NAXORB10		AXORB10		NCO9		CO9		S10		SUM
+	XSUM11		VDD		GND		NAXORB11		AXORB11		NCO10		CO10		S11		SUM
+	XSUM12		VDD		GND		NAXORB12		AXORB12		NCO11		CO11		S12		SUM
+	XSUM13		VDD		GND		NAXORB13		AXORB13		NCO12		CO12		S13		SUM
+	XSUM14		VDD		GND		NAXORB14		AXORB14		NCO13		CO13		S14		SUM
+	XSUM15		VDD		GND		NAXORB15		AXORB15		NCO14		CO14		S15		SUM
+
+.ends
