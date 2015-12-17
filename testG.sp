@@ -22,8 +22,8 @@
 vbias vdd gnd 3.3
 cload OUT gnd 1e-12
 
-*  	   VDD  GND  A  B   NP 	
-XTESTP VDD 	GND  A  B 	OUT P 
+*	G  VDD  GND  A  B  NG
+XTESTG VDD 	GND  A  B OUT G 
 
 Vin1 A GND PULSE 0 3.3 TD TR TF PW PER
 Vin2 B GND PULSE 0 3.3 TD TR TF '2*PW' '2*PER'
