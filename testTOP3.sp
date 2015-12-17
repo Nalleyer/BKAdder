@@ -4,12 +4,12 @@
 .global vdd gnd
 
 ***********parameter*********************
-.param TD=10us
-.param TR=1us
-.param TF=1us
-.param PW=50us
-.param PER=100us
-.param TEND=200us
+.param TD=10ns
+.param TR=1ns
+.param TF=1ns
+.param PW=50ns
+.param PER=100ns
+.param TEND=400ns
 
 ***********includes**********************
 .include 'net.sp'
@@ -22,14 +22,15 @@ cload OUT gnd 1e-12
 * +CI0  CO15
 
 *****************
-**test1: 0000 0000 0000 0000 + 0000 0000 0000 0000 + 0->1 (Ci0)
-XBKADDER 	GND GND GND GND GND GND GND GND GND GND GND GND GND GND GND GND 
- 		+	GND GND GND GND GND GND GND GND GND GND GND GND GND GND GND GND 
+*test3: 1011 1111 1111 1111 + 0000 0000 0000 000 0~1 Ci=0~1
+XBKADDER 	VDD GND VDD VDD VDD VDD VDD VDD VDD VDD VDD VDD VDD VDD VDD VDD 
+ 		+	GND GND GND GND GND GND GND GND GND GND GND GND GND GND GND B0
  +S15  S14  S13  S12  S11  S10  S9  S8  S7  S6  S5  S4  S3  S2  S1  S0
  +CI0  CO15 BKADDER
 
-Vin1 CI0 	GND PULSE 0 3.3 TD TR TF PW PER
-
+Vin1 B0 GND PULSE 3.3 0 TD TR TF PW PER
+Vin2 CI0 GND PULSE 3.3 0 TD TR TF '2*PW' '2*PER'
+****************
 
 .option captab
 .tran   0.01n   TEND

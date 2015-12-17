@@ -4,12 +4,6 @@
 .global vdd gnd
 
 ***********parameter*********************
-*.param T1=0
-*.param T2=500e-007
-*.param T3=500.01e-007
-*.param T4=1001.01e-007
-*.param T5=1001.02e-007
-*.param T6=2001.02e-007
 .param TD=10ns
 .param TR=1ns
 .param TF=1ns
