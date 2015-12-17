@@ -16,13 +16,15 @@
 vbias vdd gnd 3.3
 cload OUT gnd 1e-12
 
-*  	   VDD  GND  A  B   NP 	
-XTESTP VDD 	GND  A  B 	OUT P 
+*XORNXOR  		VDD	GND  A  B  NAXORB  AXORB
+XTESTXORNXOR	VDD	GND  A  B  NAXORB  AXORB XORNXOR
 
-Vin1 A GND PULSE 0 3.3 TD TR TF PW PER
-Vin2 B GND PULSE 0 3.3 TD TR TF '2*PW' '2*PER'
+Vin1 A 		GND PULSE 0 3.3 TD TR TF PW PER
+Vin2 B 		GND PULSE 0 3.3 TD TR TF '2*PW' '2*PER'
 
 .option captab
 .tran   0.01n   TEND
+
+*****************************************
 
 .end

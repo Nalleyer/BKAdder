@@ -9,18 +9,20 @@
 .param TF=1us
 .param PW=50us
 .param PER=100us
-.param TEND=500us
+.param TEND=400us
 
 ***********includes**********************
 .include 'net.sp'
 vbias vdd gnd 3.3
 cload OUT gnd 1e-12
 
-*  	   VDD  GND  A  B   NP 	
-XTESTP VDD 	GND  A  B 	OUT P 
+*SUM  			VDD  GND  NAXORB  AXORB  NC  C  S
+XTESTSUM  		VDD  GND  NAXORB  AXORB  NC  C  S SUM
 
-Vin1 A GND PULSE 0 3.3 TD TR TF PW PER
-Vin2 B GND PULSE 0 3.3 TD TR TF '2*PW' '2*PER'
+Vin1 NAXORB GND PULSE 0 3.3 TD TR TF PW PER
+Vin2 AXORB 	GND PULSE 3.3 0 TD TR TF PW PER
+Vin3 C 		GND PULSE 0 3.3 TD TR TF '2*PW' '2*PER'
+Vin4 NC 	GND PULSE 3.3 0 TD TR TF '2*PW' '2*PER'
 
 .option captab
 .tran   0.01n   TEND
