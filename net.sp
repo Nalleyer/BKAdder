@@ -7,7 +7,7 @@
 *  normal  in  n  out
 *  !G  <<  A  *  B
 .subckt  G  VDD  GND  A  B  NG
-	+L=0.4u
+	+L=0.35u
 	MP1		NG		A		VDD		VDD		pmos_3p3	L=L		W='n*L*prn'
 	MP2		NG		B		VDD		VDD		pmos_3p3	L=L		W='n*L*prn'
 	MN1		NG		A		1		GND		nmos_3p3	L=L		W='n*L*2'
@@ -17,7 +17,7 @@
 *  normal  in  n  out
 *  !P  <<  A  +  B
 .subckt  P  VDD  GND  A  B  NP 	
-	+L=0.4u
+	+L=0.35u
 	MP1		1		A		VDD		VDD		pmos_3p3	L=L		W='n*L*prn*2'
 	MP2		NP		B		1		VDD		pmos_3p3	L=L		W='n*L*prn*2'
 	MN1		NP		A		GND		GND		nmos_3p3	L=L		W='n*L'
@@ -28,7 +28,7 @@
 *  !OUTG  <<  !GA  *  (  !PA  +  !GB  )
 *  !OUTP  <<  !PA  *  !PB
 .subckt  POINT  VDD  GND  NPA  NPB  NGA  NGB  NOUTG  NOUTP
-	+L=0.4u
+	+L=0.35u
 	MP1		OUTG	NGA		VDD		VDD		pmos_3p3	L=L		W='n*L*prn'
 	MP2		1		NPA		VDD		VDD		pmos_3p3	L=L		W='n*L*prn*2'
 	MP3		OUTG	NGB		1		VDD		pmos_3p3	L=L		W='n*L*prn*2'
@@ -47,31 +47,17 @@
 	MN7		NOUTP		OUTP		GND		GND		nmos_3p3		L=L		W='n*L'
 .ends
 	
-	
-*  n  in  n  out
-*  point  without  G  signal
-*  !OUTP  <<  !PA  *  !PB
-.subckt  POINT_P  VDD  GND  NPA  NPB  NOUTP
-	+L=0.4u
-	MP1		OUTP		NPA		VDD		VDD		pmos_3p3		L=L		W='n*L*prn'
-	MP2		OUTP		NPB		VDD		VDD		pmos_3p3		L=L		W='n*L*prn'
-	MN1		OUTP		NPA		3		GND		nmos_3p3		L=L		W='n*L*2'
-	MN2		3			NPB		GND		GND		nmos_3p3		L=L		W='n*L*2'
-*		reverse
-	MP3		NOUTP		OUTP		VDD		VDD		pmos_3p3		L=L		W='n*L*prn'
-	MN3		NOUTP		OUTP		GND		GND		nmos_3p3		L=L		W='n*L'
-.ends
-	
+
 *  n  in  
 *  point  without  P  signal
 *  Co,i  =  Gi:0  +  Pi:0  *  Ci,0  (and  !Co,i)
 .subckt  POINT_G  VDD  GND  NP  NG  NCI0  NOUTG  OUTG
-	+L=0.4u
+	+L=0.35u
 	MP1		OUTG		NG		VDD		VDD		pmos_3p3		L=L		W='n*L*prn'
-	MP2		1			NPA		VDD		VDD		pmos_3p3		L=L		W='n*L*prn*2'
+	MP2		1			NP		VDD		VDD		pmos_3p3		L=L		W='n*L*prn*2'
 	MP3		OUTG		NCI0	1		VDD		pmos_3p3		L=L		W='n*L*prn*2'
 	MN1		OUTG		NG		2		GND		nmos_3p3		L=L		W='n*L*2'
-	MN2		2			NPA		GND		GND		nmos_3p3		L=L		W='n*L*2'
+	MN2		2			NP		GND		GND		nmos_3p3		L=L		W='n*L*2'
 	MN3		2			NCI0	GND		GND		nmos_3p3		L=L		W='n*L*2'
 *		reverse
 	MP4		NOUTG		OUTG		VDD		VDD		pmos_3p3		L=L		W='n*L*prn'
@@ -84,12 +70,12 @@
 *  Co,i  =  Gi:0  +  Pi:0  *  Ci,0
 *  will  be  used  to  generate  CO15.(NCO15  is  useless)
 .subckt  POINT_G1  VDD  GND  NP  NG  NCI0  OUTG
-	+L=0.4u
-	MP1		OUTG		NG		a		VDD		pmos_3p3		L=L		W='n*L*prn'
-	MP2		1			NPA		VDD		VDD		pmos_3p3		L=L		W='n*L*prn*2'
+	+L=0.35u
+	MP1		OUTG		NG		VDD		VDD		pmos_3p3		L=L		W='n*L*prn'
+	MP2		1			NP		VDD		VDD		pmos_3p3		L=L		W='n*L*prn*2'
 	MP3		OUTG		NCI0	1		VDD		pmos_3p3		L=L		W='n*L*prn*2'
 	MN1		OUTG		NG		2		GND		nmos_3p3		L=L		W='n*L*2'
-	MN2		2			NPA		GND		GND		nmos_3p3		L=L		W='n*L*2'
+	MN2		2			NP		GND		GND		nmos_3p3		L=L		W='n*L*2'
 	MN3		2			NCI0	GND		GND		nmos_3p3		L=L		W='n*L*2'
 .ends
 
@@ -98,7 +84,7 @@
 *  sum  (xor)
 *  Si  =  Pi  ^  Co,i-1  (when  i  =  1,  P0  ^  Ci,0)
 .subckt  SUM  VDD  GND  NAXORB  AXORB  NC  C  S
- +L=0.4u
+ +L=0.35u
 
 	MP2		1		AXORB	VDD		VDD		pmos_3p3		L=L		W='n*L*prn*2'
 	MP3		1		C		VDD		VDD		pmos_3p3		L=L		W='n*L*prn*2'
@@ -218,15 +204,15 @@
 	XPG13_12	VDD		GND		NP13	NP12	NG13	NG12	NG11_12		NP13_12		POINT
 	XPG15_14	VDD		GND		NP15	NP14	NG15	NG14	NG13_14		NP15_14		POINT
 
-	XPG3_0		VDD		GND		NP3_2	NP1_0		NG3_2		NG1_0		NP3_0		NG3_0		POINT
-	XPG7_4		VDD		GND		NP7_6	NP5_4		NG7_6		NG5_4		NP7_4		NG7_4		POINT
-	XPG11_8		VDD		GND		NP11_10	NP9_8		NG11_10		NG9_8		NP11_8		NG11_8		POINT
-	XPG15_12	VDD		GND		NP15_14	NP13_12		NG15_14		NG13_12		NP15_12		NG15_12		POINT
+	XPG3_0		VDD		GND		NP3_2	NP1_0		NG3_2		NG1_0		NG3_0		NP3_0		POINT
+	XPG7_4		VDD		GND		NP7_6	NP5_4		NG7_6		NG5_4		NG7_4		NP7_4		POINT
+	XPG11_8		VDD		GND		NP11_10	NP9_8		NG11_10		NG9_8		NG11_8		NP11_8		POINT
+	XPG15_12	VDD		GND		NP15_14	NP13_12		NG15_14		NG13_12		NG15_12		NP15_12		POINT
 
-	XPG7_0		VDD		GND		NP7_4		NP3_0		NG7_4		NG3_0		NP7_0		NG7_0		POINT
-	XPG15_8		VDD		GND		NP15_12		NP11_8		NG15_12		NG11_8		NP15_8		NG15_8		POINT
+	XPG7_0		VDD		GND		NP7_4		NP3_0		NG7_4		NG3_0		NG7_0		NP7_0		POINT
+	XPG15_8		VDD		GND		NP15_12		NP11_8		NG15_12		NG11_8		NG15_8		NP15_8		POINT
 
-	XPG15_0		VDD		GND		NP15_8		NP7_0		NG15_8		NG7_0		NP15_0		NG15_0		POINT
+	XPG15_0		VDD		GND		NP15_8		NP7_0		NG15_8		NG7_0		NG15_0		NP15_0		POINT
 
 * reverse	tree
 	XPG11_0		VDD		GND		NP11_8		NP7_0		NG11_8		NG7_0		NG11_0		NP11_0		POINT
