@@ -4,12 +4,12 @@
 .global vdd gnd
 
 ***********parameter*********************
-.param TD=10us
-.param TR=1us
-.param TF=1us
-.param PW=50us
-.param PER=100us
-.param TEND=500us
+.param TD=10ns
+.param TR=0.1ns
+.param TF=0.1ns
+.param PW=50ns
+.param PER=100ns
+.param TEND=500ns
 
 ***********includes**********************
 .include 'net.sp'

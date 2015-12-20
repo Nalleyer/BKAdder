@@ -4,17 +4,17 @@
 .global vdd gnd
 
 ***********parameter*********************
-.param TD=10us
-.param TR=1us
-.param TF=1us
-.param PW=50us
-.param PER=100us
-.param TEND=500us
+.param TD=10ns
+.param TR=0.01ns
+.param TF=0.01ns
+.param PW=50ns
+.param PER=100ns
+.param TEND=500ns
 
 ***********includes**********************
 .include 'net.sp'
 vbias vdd gnd 3.3
-cload OUT gnd 1e-12
+*cload OUT gnd 1e-12
 
 *  	   VDD  GND  A  B   NP 	
 XTESTP VDD 	GND  A  B 	OUT P 

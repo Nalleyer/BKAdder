@@ -14,7 +14,7 @@
 ***********includes**********************
 .include 'net.sp'
 vbias vdd gnd 3.3
-cload OUT gnd 1e-12
+*cload OUT gnd 1e-12
 
 *.subckt  BKADDER  A15  A14  A13  A12  A11  A10  A9  A8  A7  A6  A5  A4  A3  A2  A1  A0
 * +B15  B14  B13  B12  B11  B10  B9  B8  B7  B6  B5  B4  B3  B2  B1  B0
